@@ -1,6 +1,8 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 use Restserver\Libraries\REST_Controller;
 require APPPATH . '/libraries/REST_Controller.php';
+require_once APPPATH . '/libraries/JWT.php';
+use \Firebase\JWT\JWT;
  
 class Users extends \Restserver\Libraries\REST_Controller
 {
@@ -11,13 +13,6 @@ class Users extends \Restserver\Libraries\REST_Controller
     }
     /**
      * User Register
-     * --------------------------
-     * @param: fullname
-     * @param: username
-     * @param: email
-     * @param: password
-     * --------------------------
-     * @method : POST
      * @link : user/register
      */
     public function register_post()
@@ -69,10 +64,6 @@ class Users extends \Restserver\Libraries\REST_Controller
     /**
      * User Login API
      * --------------------
-     * @param: username
-     * @param: password
-     * --------------------------
-     * @method : POST
      * @link: user/login
      */
     public function login_post()
@@ -98,17 +89,23 @@ class Users extends \Restserver\Libraries\REST_Controller
             $output = $this->UserModel->user_login($username,$password);
             if ($output != FALSE)
             {
+                $date = new DateTime();
+                $token['user_id']=$output->user_id;
+                $token['username']=$username;
+                $token['password']=$password;
+                $token['full_name']=$output->fullname;
+                $token['email']=$output->email;
+                $token['iat']=$date->getTimestamp();
+                $token['exp']=$date->getTimestamp()+60*60*24;
+                $res= JWT::encode($token, "my Secret key!");
                 
                 $return_data = [
                     'user_id' => $output->user_id,
                     'full_name' => $output->fullname,
                     'email' => $output->email,
+                    'token'=> $res,
                 ];
 
-                $_SESSION['user_id']      = (int)$user->user_id;
-				$_SESSION['username']     = (string)$user->username;
-				$_SESSION['logged_in']    = (bool)true;
-                
                 // Login Success
                 $message = [
                     'status' => true,
