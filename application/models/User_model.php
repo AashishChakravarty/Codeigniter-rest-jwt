@@ -3,28 +3,41 @@ class User_Model extends CI_Model
 {
     protected $user_table = 'users_table';
     
-    
-    // Register
-    public function insert_user(array $data) {
+    public function check_email_exists($email) {
+        $this->db->select('id')->from($this->user_table);
+        $this->db->where('email',$email);
+
+        $result = $this->db->get()->row();
+
+        if ($result) {
+            return $result;
+        } else {
+            return 0;
+        }
+        
+    }
+
+    public function insert_user($data) {
         $this->db->insert($this->user_table, $data);
-        return $this->db->insert_id();
+        $result = $this->db->insert_id();
+
+        if ($result) {
+            return $result;
+        } else {
+            return 0;
+        }
+        
     }
     
-
-    //Login
-    public function user_login($username, $password)
+    public function user_login($email, $password)
     {
-        $this->db->where('username', $username);
-        $q = $this->db->get($this->user_table);
-        if( $q->num_rows() ) 
-        {
-            $user_pass = $q->row('password');
-            if(md5($password) === $user_pass) {
-                return $q->row();
-            }
-            return FALSE;
-        }else{
-            return FALSE;
-        }
+        $this->db->where('email', $email);
+        $this->db->where('password',md5($password));
+        $result = $this->db->get($this->user_table)->row();
+        if($result){
+            return $result;
+     	}else{
+     		return 0;
+     	}
     }
 }
