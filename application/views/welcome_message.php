@@ -88,7 +88,7 @@
         <code>application/controllers/Welcome.php</code>
 
         <?php if (file_exists(FCPATH.'user_guide/index.html')) : ?>
-        <p>If you are exploring CodeIgniter for the very first time, you should start by reading the <a href="<?php echo base_url('user_guide/index.html'); ?>" target="_blank">User Guide</a>.</p>
+        <p>If you are exploring CodeIgniter for the very first time, you should start by reading the <a href="https://codeigniter.com/user_guide" target="_blank">User Guide</a>.</p>
         <?php endif ?>
     </div>
 
